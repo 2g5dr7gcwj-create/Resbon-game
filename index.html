@@ -7,7 +7,6 @@
     <title>رسـبون عراق 🏓</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script>
@@ -20,10 +19,6 @@
                         'resbon-red': '#dc2626',
                         'resbon-blue': '#2563eb',
                         'resbon-gray': '#2a2a2a'
-                    },
-                    fontFamily: {
-                        'digital': ['Courier New', 'monospace'],
-                        'arabic': ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif']
                     }
                 }
             }
@@ -31,252 +26,93 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: #0a0a0a;
-            color: white;
-        }
-        .neon-text-red {
-            text-shadow: 0 0 10px rgba(220, 38, 38, 0.8), 0 0 20px rgba(220, 38, 38, 0.4);
-        }
-        .neon-text-blue {
-            text-shadow: 0 0 10px rgba(37, 99, 235, 0.8), 0 0 20px rgba(37, 99, 235, 0.4);
-        }
-        .glass-panel {
-            background: rgba(26, 26, 26, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(220, 38, 38, 0.3);
-        }
-        .timer-glow {
-            animation: pulse-glow 2s infinite;
-        }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.8), 0 0 40px rgba(37, 99, 235, 0.4); }
-        }
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .progress-bar {
-            transition: width 1s linear;
-        }
+        body { font-family: 'Cairo', sans-serif; background: #0a0a0a; color: white; }
+        .neon-text-red { text-shadow: 0 0 10px rgba(220, 38, 38, 0.8); }
+        .neon-text-blue { text-shadow: 0 0 10px rgba(37, 99, 235, 0.8); }
+        .glass-panel { background: rgba(26, 26, 26, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.3); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .status-active { background: #4ade80; box-shadow: 0 0 10px #4ade80; }
+        .status-paused { background: #facc15; }
+        .status-empty { background: #6b7280; }
+        .pulse-active { animation: pulse-glow 2s infinite; border-color: #dc2626 !important; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); } 50% { box-shadow: 0 0 15px rgba(220, 38, 38, 0.8); } }
     </style>
 </head>
 <body class="bg-resbon-black min-h-screen overflow-x-hidden">
 
-    <!-- Header -->
     <header class="fixed top-0 w-full z-50 glass-panel border-b border-resbon-red/30">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-black border-2 border-resbon-red rounded-lg flex items-center justify-center shadow-lg shadow-red-900/50">
-                    <span class="text-2xl font-black text-resbon-red neon-text-red">RS</span>
+                <div class="w-10 h-10 bg-black border-2 border-resbon-red rounded-lg flex items-center justify-center">
+                    <span class="text-xl font-black text-resbon-red neon-text-red">RS</span>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold text-white">رسـبون عراق</h1>
-                    <p class="text-xs text-resbon-red">🏓 Resbon Arena</p>
-                </div>
+                <h1 class="text-lg font-bold text-white">رسـبون عراق</h1>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="hidden md:block text-left">
-                    <p class="text-xs text-gray-400">الأرباح اليوم</p>
-                    <p class="text-lg font-bold text-resbon-blue neon-text-blue" id="totalProfit">0 د.ع</p>
-                </div>
-                <button onclick="showStats()" class="p-2 bg-resbon-dark border border-resbon-blue rounded-lg hover:bg-resbon-blue/20 transition">
-                    <i data-feather="pie-chart" class="w-5 h-5 text-resbon-blue"></i>
-                </button>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-400">الأرباح</p>
+                <p class="text-md font-bold text-resbon-blue neon-text-blue" id="totalProfit">0 د.ع</p>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 pt-24 pb-20">
-        
-        <!-- Tab Navigation -->
-        <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
-            <button onclick="switchTab('tables')" id="tab-tables" class="flex-1 py-3 px-6 bg-resbon-red text-white rounded-lg font-bold shadow-lg shadow-red-900/30 transition transform hover:scale-105 flex items-center justify-center gap-2">
-                <i data-feather="grid"></i>
-                <span>منضدات البينغ بونغ</span>
-            </button>
-            <button onclick="switchTab('playstation')" id="tab-playstation" class="flex-1 py-3 px-6 bg-resbon-dark border border-resbon-blue text-white rounded-lg font-bold hover:bg-resbon-blue/20 transition transform hover:scale-105 flex items-center justify-center gap-2">
-                <i data-feather="monitor"></i>
-                <span>بلايستيشن</span>
-            </button>
+        <div class="flex gap-2 mb-6">
+            <button onclick="switchTab('tables')" id="tab-tables" class="flex-1 py-3 bg-resbon-red text-white rounded-xl font-bold transition">المناضد</button>
+            <button onclick="switchTab('playstation')" id="tab-playstation" class="flex-1 py-3 bg-resbon-dark border border-resbon-blue text-white rounded-xl font-bold transition">بلايستيشن</button>
         </div>
 
-        <!-- Tables Section -->
-        <div id="section-tables" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Generated by JS -->
-        </div>
-
-        <!-- PlayStation Section -->
-        <div id="section-playstation" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Generated by JS -->
-        </div>
-
+        <div id="section-tables" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="section-playstation" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </main>
 
-    <!-- Add Session Modal -->
     <div id="modal-add" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md slide-in border-2 border-resbon-red">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-resbon-red neon-text-red">حجز جديد</h2>
-                <button onclick="closeModal('modal-add')" class="text-gray-400 hover:text-white">
-                    <i data-feather="x"></i>
-                </button>
-            </div>
-            
-            <form id="form-add" onsubmit="handleAddSession(event)">
-                <input type="hidden" id="deviceType">
-                <input type="hidden" id="deviceId">
+        <div class="glass-panel rounded-2xl p-6 w-full max-w-md border-2 border-resbon-red">
+            <h2 class="text-xl font-bold text-resbon-red mb-4" id="deviceLabel">حجز جديد</h2>
+            <form onsubmit="handleAddSession(event)">
+                <input type="hidden" id="deviceType"><input type="hidden" id="deviceId">
+                <input type="text" id="playerName" required class="w-full bg-resbon-dark border border-resbon-gray rounded-lg p-3 mb-4 text-white" placeholder="اسم اللاعب">
                 
-                <div class="mb-4">
-                    <label class="block text-sm text-gray-400 mb-2">الجهاز</label>
-                    <div class="bg-resbon-dark p-3 rounded-lg border border-resbon-red/30 text-white font-bold" id="deviceLabel">
-                        منضدة رقم 1
-                    </div>
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button type="button" onclick="setDurationType('fixed')" class="py-2 bg-resbon-red rounded-lg text-sm">وقت محدد</button>
+                    <button type="button" onclick="setDurationType('open')" class="py-2 bg-resbon-dark border border-resbon-gray rounded-lg text-sm">وقت مفتوح</button>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm text-gray-400 mb-2">اسم اللاعب</label>
-                    <input type="text" id="playerName" required class="w-full bg-resbon-dark border border-resbon-gray rounded-lg p-3 text-white focus:border-resbon-red focus:outline-none transition" placeholder="مثال: عباس">
+                <div id="duration-selector" class="grid grid-cols-2 gap-2 mb-4 text-xs text-center">
+                    <div onclick="state.selectedDuration=60; state.selectedPrice=4000; updatePriceDisplay()" class="p-2 border border-resbon-gray rounded-lg cursor-pointer hover:border-resbon-blue">ساعة <br> 4,000</div>
+                    <div onclick="state.selectedDuration=30; state.selectedPrice=2000; updatePriceDisplay()" class="p-2 border border-resbon-gray rounded-lg cursor-pointer hover:border-resbon-blue">نصف ساعة <br> 2,000</div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm text-gray-400 mb-2">نوع الحجز</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="setDurationType('fixed')" id="btn-fixed" class="py-2 px-4 bg-resbon-red text-white rounded-lg border-2 border-resbon-red transition">
-                            وقت محدد
-                        </button>
-                        <button type="button" onclick="setDurationType('open')" id="btn-open" class="py-2 px-4 bg-resbon-dark text-gray-400 rounded-lg border-2 border-resbon-gray transition">
-                            وقت مفتوح
-                        </button>
-                    </div>
+                <div class="flex justify-between p-3 bg-black/40 rounded-lg mb-6">
+                    <span class="text-gray-400">السعر:</span>
+                    <span id="totalPrice" class="font-bold text-resbon-red">4,000 د.ع</span>
                 </div>
 
-                <div id="duration-selector" class="mb-4">
-                    <label class="block text-sm text-gray-400 mb-2">المدة</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="setDuration(15, 1000)" class="duration-btn py-3 bg-resbon-dark border border-resbon-gray rounded-lg hover:border-resbon-blue transition text-sm" data-min="15">
-                            ربع ساعة<br><span class="text-resbon-blue">1,000 د.ع</span>
-                        </button>
-                        <button type="button" onclick="setDuration(30, 2000)" class="duration-btn py-3 bg-resbon-dark border border-resbon-gray rounded-lg hover:border-resbon-blue transition text-sm" data-min="30">
-                            نصف ساعة<br><span class="text-resbon-blue">2,000 د.ع</span>
-                        </button>
-                        <button type="button" onclick="setDuration(60, 4000)" class="duration-btn py-3 bg-resbon-dark border border-resbon-gray rounded-lg hover:border-resbon-blue transition text-sm" data-min="60">
-                            ساعة كاملة<br><span class="text-resbon-blue">4,000 د.ع</span>
-                        </button>
-                        <button type="button" onclick="setDuration(0, 500)" class="duration-btn py-3 bg-resbon-dark border border-resbon-gray rounded-lg hover:border-resbon-blue transition text-sm" data-min="0">
-                            لعبة واحدة<br><span class="text-resbon-blue">500 د.ع</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mb-6 p-4 bg-resbon-dark/50 rounded-lg border border-resbon-blue/30">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-400">السعر الإجمالي:</span>
-                        <span class="text-2xl font-bold text-resbon-red neon-text-red" id="totalPrice">0 د.ع</span>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full py-4 bg-gradient-to-r from-resbon-red to-red-800 text-white font-bold rounded-lg shadow-lg shadow-red-900/50 hover:shadow-red-900/80 transition transform hover:scale-[1.02]">
-                    بدء الجلسة
-                </button>
+                <button type="submit" class="w-full py-4 bg-resbon-red text-white font-bold rounded-xl shadow-lg shadow-red-900/50">بدء الجلسة</button>
+                <button type="button" onclick="closeModal('modal-add')" class="w-full mt-2 py-2 text-gray-400 text-sm">إلغاء</button>
             </form>
         </div>
     </div>
 
-    <!-- Manage Session Modal -->
-    <div id="modal-manage" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-md slide-in border-2 border-resbon-blue">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-resbon-blue neon-text-blue">إدارة الجلسة</h2>
-                <button onclick="closeModal('modal-manage')" class="text-gray-400 hover:text-white">
-                    <i data-feather="x"></i>
-                </button>
-            </div>
-
-            <div id="session-info" class="mb-6 space-y-3">
-                <!-- Filled by JS -->
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <button onclick="extendSession()" class="py-3 bg-resbon-dark border border-resbon-blue rounded-lg hover:bg-resbon-blue/20 transition flex flex-col items-center gap-1">
-                    <i data-feather="plus-circle" class="text-resbon-blue"></i>
-                    <span class="text-sm">تمديد الوقت</span>
-                </button>
-                <button onclick="togglePause()" id="btn-pause" class="py-3 bg-resbon-dark border border-yellow-600 rounded-lg hover:bg-yellow-900/20 transition flex flex-col items-center gap-1">
-                    <i data-feather="pause" class="text-yellow-600"></i>
-                    <span class="text-sm">إيقاف مؤقت</span>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <button onclick="convertToFixed()" class="py-3 bg-resbon-dark border border-resbon-red rounded-lg hover:bg-resbon-red/20 transition flex flex-col items-center gap-1">
-                    <i data-feather="clock" class="text-resbon-red"></i>
-                    <span class="text-sm">تحويل لوقت محدد</span>
-                </button>
-                <button onclick="endSession()" class="py-3 bg-red-900/30 border border-red-600 rounded-lg hover:bg-red-900/50 transition flex flex-col items-center gap-1">
-                    <i data-feather="stop-circle" class="text-red-600"></i>
-                    <span class="text-sm">إنهاء الجلسة</span>
-                </button>
-            </div>
-
-            <div id="extend-options" class="hidden mb-4 p-4 bg-resbon-dark rounded-lg border border-resbon-gray">
-                <h3 class="text-sm text-gray-400 mb-3">اختر مدة التمديد:</h3>
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="addTime(15, 1000)" class="py-2 bg-resbon-dark border border-resbon-gray rounded text-xs hover:border-resbon-red">
-                        +15 د<br>1,000
-                    </button>
-                    <button onclick="addTime(30, 2000)" class="py-2 bg-resbon-dark border border-resbon-gray rounded text-xs hover:border-resbon-red">
-                        +30 د<br>2,000
-                    </button>
-                    <button onclick="addTime(60, 4000)" class="py-2 bg-resbon-dark border border-resbon-gray rounded text-xs hover:border-resbon-red">
-                        +60 د<br>4,000
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Modal -->
-    <div id="modal-stats" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-panel rounded-2xl p-6 w-full max-w-lg slide-in border-2 border-resbon-blue">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-white">إحصائيات اليوم</h2>
-                <button onclick="closeModal('modal-stats')" class="text-gray-400 hover:text-white">
-                    <i data-feather="x"></i>
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-resbon-dark p-4 rounded-lg border border-resbon-red/30 text-center">
-                    <p class="text-gray-400 text-sm">إجمالي الأرباح</p>
-                    <p class="text-2xl font-bold text-resbon-red neon-text-red mt-1" id="stats-total">0 د.ع</p>
-                </div>
-                <div class="bg-resbon-dark p-4 rounded-lg border border-resbon-blue/30 text-center">
-                    <p class="text-gray-400 text-sm">عدد الجلسات</p>
-                    <p class="text-2xl font-bold text-resbon-blue neon-text-blue mt-1" id="stats-count">0</p>
-                </div>
-            </div>
-
-            <div class="bg-resbon-dark rounded-lg p-4 max-h-64 overflow-y-auto">
-                <h3 class="text-sm text-gray-400 mb-3">الجلسات المنتهية</h3>
-                <div id="completed-sessions" class="space-y-2">
-                    <!-- Filled by JS -->
-                </div>
-            </div>
-
-            <button onclick="resetStats()" class="w-full mt-4 py-3 bg-red-900/20 border border-red-600 text-red-400 rounded-lg hover:bg-red-900/40 transition text-sm">
-                تصفير الإحصائيات (يوم جديد)
-            </button>
+    <div id="modal-manage" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl p-6 w-full max-w-md border-2 border-resbon-blue">
+            <h2 class="text-xl font-bold text-resbon-blue mb-4">إدارة الجلسة</h2>
+            <div id="session-info" class="mb-6 p-4 bg-black/30 rounded-xl space-y-2"></div>
+            <button onclick="endSession()" class="w-full py-4 bg-red-600 text-white font-bold rounded-xl mb-2">إنهاء وحساب</button>
+            <button onclick="closeModal('modal-manage')" class="w-full py-2 text-gray-400">إغلاق</button>
         </div>
     </div>
 
     <script src="script.js"></script>
-    <script>feather.replace();</script>
+    <script>
+        function updatePriceDisplay() {
+            document.getElementById('totalPrice').textContent = state.selectedPrice.toLocaleString() + ' د.ع';
+        }
+        function switchTab(tab) {
+            document.getElementById('section-tables').classList.toggle('hidden', tab !== 'tables');
+            document.getElementById('section-playstation').classList.toggle('hidden', tab !== 'playstation');
+            document.getElementById('tab-tables').className = tab === 'tables' ? 'flex-1 py-3 bg-resbon-red text-white rounded-xl font-bold' : 'flex-1 py-3 bg-resbon-dark border border-resbon-blue text-white rounded-xl font-bold';
+            document.getElementById('tab-playstation').className = tab === 'playstation' ? 'flex-1 py-3 bg-resbon-red text-white rounded-xl font-bold' : 'flex-1 py-3 bg-resbon-dark border border-resbon-blue text-white rounded-xl font-bold';
+        }
+    </script>
 </body>
 </html>
