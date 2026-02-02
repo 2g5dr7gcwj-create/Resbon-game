@@ -1,126 +1,137 @@
 const state = {
-    tables: Array(6).fill(null).map((_, i) => ({ id: i + 1, type: 'tables', name: `منضدة ${i + 1}`, currentSession: null })),
-    playstations: Array(4).fill(null).map((_, i) => ({ id: i + 1, type: 'playstation', name: `بلايستيشن ${i + 1}`, currentSession: null })),
-    totalProfit: 0
+    tables: Array(6).fill(null).map((_, i) => ({ id: i + 1, type: 'tables', name: `منضدة ${i + 1}`, session: null })),
+    ps: Array(4).fill(null).map((_, i) => ({ id: i + 1, type: 'ps', name: `بلايستيشن ${i + 1}`, session: null })),
+    profit: 0,
+    debts: [],
+    inventory: { 'بيبسي': 500, 'ماء': 250, 'أركيلة': 3000, 'كابتشينو': 1000 },
+    activeDev: null,
+    selMins: 60,
+    selPrice: 4000,
+    mode: 'fixed'
 };
 
-// --- وظيفة الحفظ (الحل الوحيد للمشكلة) ---
-function saveToStorage() {
-    const backup = {
-        totalProfit: state.totalProfit,
-        sessions: [...state.tables, ...state.playstations].map(d => ({
-            id: d.id, type: d.type, s: d.currentSession ? {...d.currentSession, lastUpdate: Date.now()} : null
-        }))
-    };
-    localStorage.setItem('resbon_data', JSON.stringify(backup));
-}
-
-function loadFromStorage() {
-    const saved = localStorage.getItem('resbon_data');
-    if (!saved) return;
-    const data = JSON.parse(saved);
-    state.totalProfit = data.totalProfit || 0;
-    document.getElementById('totalProfit').textContent = state.totalProfit.toLocaleString() + ' د.ع';
-    
-    data.sessions.forEach(item => {
-        if (item.s) {
-            const list = item.type === 'tables' ? state.tables : state.playstations;
-            const dev = list.find(d => d.id === item.id);
-            const passed = Math.floor((Date.now() - item.s.lastUpdate) / 1000);
-            dev.currentSession = item.s;
-            if (dev.currentSession.isOpen) dev.currentSession.remaining += passed;
-            else dev.currentSession.remaining = Math.max(0, dev.currentSession.remaining - passed);
-            startTimer(dev);
-        }
+// العداد الذكي
+setInterval(() => {
+    [...state.tables, ...state.ps].forEach(d => {
+        if (!d.session) return;
+        const s = d.session;
+        if (s.isOpen) s.rem++; else if (s.rem > 0) s.rem--;
+        
+        const m = Math.floor(Math.abs(s.rem) / 60);
+        const sec = Math.abs(s.rem) % 60;
+        s.display = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        
+        const el = document.getElementById(`t-${d.type}-${d.id}`);
+        if (el) el.textContent = s.display;
     });
-}
-// ---------------------------------------
+}, 1000);
 
-function renderDevices() {
-    const render = (type, list, target) => {
-        document.getElementById(target).innerHTML = list.map(d => {
-            const s = d.currentSession;
+function render() {
+    ['tables', 'ps'].forEach(type => {
+        const container = document.getElementById(`section-${type}`);
+        container.innerHTML = state[type === 'ps' ? 'ps' : 'tables'].map(d => {
+            const s = d.session;
             return `
-            <div class="glass-panel p-4 rounded-xl border ${s ? 'border-red-600' : 'border-gray-800'}">
-                <div class="flex justify-between mb-2"><span>${d.name}</span><span>${s ? '🔴' : '⚪'}</span></div>
-                <div class="text-2xl font-bold text-center mb-4" id="timer-${type}-${d.id}">${s ? s.displayTime : '--:--'}</div>
-                <button onclick="${s ? 'openManage' : 'openAdd'}('${type}', ${d.id})" class="w-full py-2 ${s ? 'bg-blue-600' : 'bg-red-600'} rounded-lg text-sm">
-                    ${s ? 'إدارة' : 'حجز'}
+            <div class="card-glass p-6 flex items-center justify-between ${s ? 'card-active' : ''}">
+                <div>
+                    <h3 class="font-bold text-slate-200">${d.name}</h3>
+                    <div class="text-2xl font-black timer-glow mt-1 ${s ? 'text-blue-400' : 'text-slate-600'}" id="t-${type}-${d.id}">
+                        ${s ? s.display : '00:00'}
+                    </div>
+                </div>
+                <button onclick="openAction('${type}', ${d.id})" class="px-6 py-3 rounded-xl font-bold btn-action ${s ? 'bg-green-600/20 text-green-400' : 'bg-slate-800 text-slate-300'}">
+                    ${s ? 'إدارة / طلب' : 'حجز'}
                 </button>
             </div>`;
         }).join('');
-    };
-    render('tables', state.tables, 'section-tables');
-    render('playstation', state.playstations, 'section-playstation');
+    });
+    updateStats();
 }
 
-function startTimer(dev) {
-    if (dev.interval) clearInterval(dev.interval);
-    dev.interval = setInterval(() => {
-        const s = dev.currentSession;
-        if (!s) return clearInterval(dev.interval);
-        if (s.isOpen) s.remaining++;
-        else if (s.remaining > 0) s.remaining--;
-        const m = Math.floor(Math.abs(s.remaining) / 60);
-        const sec = Math.abs(s.remaining) % 60;
-        s.displayTime = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-        const el = document.getElementById(`timer-${dev.type}-${dev.id}`);
-        if (el) el.textContent = s.displayTime;
-        saveToStorage();
-    }, 1000);
+function openAction(type, id) {
+    const list = type === 'ps' ? state.ps : state.tables;
+    state.activeDev = list.find(d => d.id === id);
+    if (state.activeDev.session) {
+        document.getElementById('manageName').textContent = state.activeDev.name;
+        document.getElementById('managePrice').textContent = state.activeDev.session.price.toLocaleString() + ' د.ع';
+        document.getElementById('modal-manage').classList.remove('hidden');
+    } else {
+        document.getElementById('deviceLabel').textContent = state.activeDev.name;
+        document.getElementById('modal-add').classList.remove('hidden');
+    }
 }
 
-function handleAddSession(e) {
-    e.preventDefault();
-    const { type, id } = state.active;
-    const dev = (type === 'tables' ? state.tables : state.playstations)[id - 1];
-    const isOpen = document.getElementById('duration-selector').classList.contains('hidden');
-    dev.currentSession = {
-        remaining: isOpen ? 0 : (state.selMins * 60),
-        isOpen: isOpen,
-        price: state.selPrice || 4000,
-        displayTime: '00:00'
+function addItem(name) {
+    const price = state.inventory[name];
+    state.activeDev.session.price += price;
+    document.getElementById('managePrice').textContent = state.activeDev.session.price.toLocaleString() + ' د.ع';
+}
+
+function startSession() {
+    state.activeDev.session = { 
+        rem: state.mode === 'open' ? 0 : (state.selMins * 60), 
+        price: state.selPrice, 
+        isOpen: state.mode === 'open', 
+        display: '00:00' 
     };
-    startTimer(dev);
-    renderDevices();
+    render();
     closeModal('modal-add');
 }
 
-function openAdd(type, id) { state.active = { type, id }; document.getElementById('modal-add').classList.remove('hidden'); }
-function openManage(type, id) {
-    state.active = { type, id };
-    const s = (type === 'tables' ? state.tables : state.playstations)[id - 1].currentSession;
-    document.getElementById('session-info').innerHTML = `<p class="text-center font-bold">الحساب: ${s.price} د.ع</p>`;
-    document.getElementById('modal-manage').classList.remove('hidden');
+function finishSession(isDebt) {
+    const s = state.activeDev.session;
+    if (isDebt) {
+        const name = prompt("اسم اللاعب المطلوب:");
+        if (name) state.debts.push({ name, amount: s.price, date: new Date().toLocaleTimeString() });
+    } else {
+        state.profit += s.price;
+    }
+    state.activeDev.session = null;
+    render();
+    closeModal('modal-manage');
 }
 
-function addTime(m, p) {
-    const { type, id } = state.active;
-    const s = (type === 'tables' ? state.tables : state.playstations)[id - 1].currentSession;
-    s.remaining += (m * 60);
-    s.price += p;
-    s.isOpen = false;
-    renderDevices(); closeModal('modal-manage');
+function payDebt(index) {
+    state.profit += state.debts[index].amount;
+    state.debts.splice(index, 1);
+    updateStats();
 }
 
-function endSession() {
-    const { type, id } = state.active;
-    const devs = (type === 'tables' ? state.tables : state.playstations);
-    state.totalProfit += devs[id-1].currentSession.price;
-    clearInterval(devs[id-1].interval);
-    devs[id-1].interval = null;
-    devs[id-1].currentSession = null;
-    document.getElementById('totalProfit').textContent = state.totalProfit.toLocaleString() + ' د.ع';
-    saveToStorage(); renderDevices(); closeModal('modal-manage');
+function updateStats() {
+    document.getElementById('totalProfit').textContent = state.profit.toLocaleString() + ' د.ع';
+    document.getElementById('debt-list').innerHTML = state.debts.map((d, i) => `
+        <div class="flex justify-between items-center p-3 bg-red-900/20 border border-red-900/30 rounded-xl mb-2">
+            <div><p class="font-bold text-sm">${d.name}</p><p class="text-[10px] text-slate-500">${d.date}</p></div>
+            <div class="flex items-center gap-4">
+                <span class="font-black text-red-400">${d.amount.toLocaleString()}</span>
+                <button onclick="payDebt(${i})" class="bg-green-600 p-2 rounded-lg text-[10px] font-bold">تسديد</button>
+            </div>
+        </div>
+    `).join('');
 }
 
-function setDuration(m, p) { state.selMins = m; state.selPrice = p; document.getElementById('totalPrice').textContent = p + ' د.ع'; }
-function setDurationType(t) { document.getElementById('duration-selector').classList.toggle('hidden', t === 'open'); state.selPrice = t === 'open' ? 0 : 4000; }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+function pickPrice(m, p) { 
+    state.selMins = m; state.selPrice = p; 
+    document.getElementById('displayPrice').textContent = p.toLocaleString() + ' د.ع'; 
+}
+
+function setMode(m) {
+    state.mode = m;
+    document.getElementById('prices-grid').classList.toggle('hidden', m === 'open');
+    document.getElementById('mode-fixed').className = m === 'fixed' ? 'flex-1 py-2 rounded-lg bg-blue-600 text-sm font-bold border border-blue-400' : 'flex-1 py-2 rounded-lg bg-slate-800 text-sm font-bold text-slate-400';
+    document.getElementById('mode-open').className = m === 'open' ? 'flex-1 py-2 rounded-lg bg-blue-600 text-sm font-bold border border-blue-400' : 'flex-1 py-2 rounded-lg bg-slate-800 text-sm font-bold text-slate-400';
+    state.selPrice = m === 'open' ? 0 : 4000;
+    document.getElementById('displayPrice').textContent = state.selPrice.toLocaleString() + ' د.ع';
+}
+
 function switchTab(t) {
     document.getElementById('section-tables').classList.toggle('hidden', t !== 'tables');
-    document.getElementById('section-playstation').classList.toggle('hidden', t !== 'playstation');
+    document.getElementById('section-ps').classList.toggle('hidden', t !== 'ps');
+    document.getElementById('tab-tables').className = t === 'tables' ? 'flex-1 py-3 rounded-xl font-bold bg-blue-600 text-white shadow-lg' : 'flex-1 py-3 rounded-xl font-bold text-slate-400';
+    document.getElementById('tab-ps').className = t === 'ps' ? 'flex-1 py-3 rounded-xl font-bold bg-blue-600 text-white shadow-lg' : 'flex-1 py-3 rounded-xl font-bold text-slate-400';
 }
 
-loadFromStorage();
-renderDevices();
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+// تشغيل الواجهة
+render();
