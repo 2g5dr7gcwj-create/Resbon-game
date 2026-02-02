@@ -1,0 +1,28 @@
+json
+{
+    "name": "رسـبون عراق 🏓",
+    "short_name": "Resbon Iraq",
+    "description": "نظام إدارة قاعة ألعاب رسـبون عراق - حجز المنضدات والبلايستيشن",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#dc2626",
+    "orientation": "portrait",
+    "scope": "/",
+    "lang": "ar",
+    "dir": "rtl",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23000' width='192' height='192' rx='20'/%3E%3Ctext x='96' y='120' font-family='Arial Black' font-size='80' fill='%23dc2626' text-anchor='middle'%3ERS%3C/text%3E%3C/svg%3E",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23000' width='512' height='512' rx='40'/%3E%3Ctext x='256' y='320' font-family='Arial Black' font-size='200' fill='%23dc2626' text-anchor='middle'%3ERS%3C/text%3E%3C/svg%3E",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ]
+}
+
+</html>
