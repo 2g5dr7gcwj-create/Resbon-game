@@ -1,0 +1,219 @@
+/* Resbon Iraq - Gaming Arena Management System Styles */
+
+:root {
+    --primary-red: #dc2626;
+    --primary-blue: #2563eb;
+    --dark-bg: #0a0a0a;
+    --panel-bg: #1a1a1a;
+    --border-gray: #2a2a2a;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-red) var(--dark-bg);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--primary-red);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #ef4444;
+}
+
+body {
+    background-color: var(--dark-bg);
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* Digital Timer Font */
+.digital-timer {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* Card Hover Effects */
+.device-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.device-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.device-card:hover::before {
+    left: 100%;
+}
+
+.device-card.active {
+    border-color: var(--primary-red);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+.device-card.paused {
+    border-color: #ca8a04;
+    opacity: 0.8;
+}
+
+/* Neon Glow Effects */
+.neon-border-red {
+    box-shadow: 0 0 5px var(--primary-red), inset 0 0 5px var(--primary-red);
+}
+
+.neon-border-blue {
+    box-shadow: 0 0 5px var(--primary-blue), inset 0 0 5px var(--primary-blue);
+}
+
+/* Progress Ring for Timer */
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 1s linear;
+    stroke-linecap: round;
+}
+
+/* Pulse Animation for Active Sessions */
+@keyframes pulse-red {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+    }
+}
+
+.pulse-active {
+    animation: pulse-red 2s infinite;
+}
+
+/* Slide Animations */
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Custom Button States */
+.btn-gaming {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.btn-gaming::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-gaming:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Status Indicators */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 6px;
+}
+
+.status-active {
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    animation: blink 2s infinite;
+}
+
+.status-paused {
+    background: #eab308;
+    box-shadow: 0 0 8px #eab308;
+}
+
+.status-empty {
+    background: #6b7280;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Glassmorphism Enhancement */
+.glass-strong {
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Grid Pattern Background */
+.grid-pattern {
+    background-image: 
+        linear-gradient(rgba(220, 38, 38, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+    .digital-timer {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+}
+
+/* Print Styles for Receipts */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    .no-print {
+        display: none !important;
+    }
+    .print-only {
+        display: block !important;
+    }
+}
