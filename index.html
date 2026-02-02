@@ -11,7 +11,6 @@
     </style>
 </head>
 <body class="p-4">
-
     <header class="flex justify-between items-center mb-6 glass-panel p-4 rounded-xl">
         <h1 class="font-bold">رسـبون عراق</h1>
         <p id="totalProfit" class="text-blue-500 font-bold text-lg">0 د.ع</p>
@@ -27,7 +26,7 @@
 
     <div id="modal-add" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center p-4">
         <div class="glass-panel p-6 rounded-xl w-full max-w-md">
-            <h2 id="deviceLabel" class="text-xl font-bold mb-4">حجز جديد</h2>
+            <h2 class="text-xl font-bold mb-4">حجز جديد</h2>
             <input type="text" id="playerName" class="w-full bg-gray-800 p-3 rounded mb-4" placeholder="اسم اللاعب">
             <div class="grid grid-cols-2 gap-2 mb-4">
                 <button onclick="setDurationType('fixed')" class="bg-red-600 py-2 rounded">وقت محدد</button>
@@ -46,18 +45,17 @@
     </div>
 
     <div id="modal-manage" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-xl w-full max-w-md">
-            <h2 class="text-xl font-bold mb-4 text-center text-blue-500">إدارة</h2>
+        <div class="glass-panel p-6 rounded-xl w-full max-w-md text-center">
+            <h2 class="text-xl font-bold mb-4 text-blue-500">إدارة</h2>
             <div id="session-info" class="mb-4"></div>
             <div class="grid grid-cols-2 gap-2 mb-4 text-xs">
                 <button onclick="addTime(30, 2000)" class="bg-gray-800 py-3 rounded border border-blue-500">➕ 30 دقيقة</button>
                 <button onclick="addTime(60, 4000)" class="bg-gray-800 py-3 rounded border border-blue-500">➕ 1 ساعة</button>
             </div>
             <button onclick="endSession()" class="w-full py-4 bg-red-600 rounded-lg font-bold mb-4">إنهاء الحساب</button>
-            <button onclick="closeModal('modal-manage')" class="w-full text-gray-400 text-center">رجوع</button>
+            <button onclick="closeModal('modal-manage')" class="w-full text-gray-400">رجوع</button>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
