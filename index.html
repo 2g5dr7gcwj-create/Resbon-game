@@ -5,88 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>رسبون عراق 🏓</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Changa', sans-serif; background: #0a0f1e; color: white; user-select: none; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
-        .active-glow { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); animation: pulse border 2s infinite; }
-        .bolt { color: #facc15; text-shadow: 0 0 10px #facc15; }
-        .invoice-paper { color: #000; font-family: 'Courier New', Courier, monospace; }
-        @keyframes pulse-border { 0% { border-color: #3b82f6; } 50% { border-color: #1d4ed8; } 100% { border-color: #3b82f6; } }
+        body { font-family: 'Changa', sans-serif; background: #050810; color: white; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 24px; }
+        .bolt-bg { position: relative; overflow: hidden; }
+        .bolt-bg::after { content: '⚡'; position: absolute; top: -10px; left: -10px; font-size: 4rem; opacity: 0.05; transform: rotate(20deg); }
+        .active-card { border-color: #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.15); }
+        .btn-bolt { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); position: relative; }
+        .btn-bolt::before { content: '⚡'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.5; }
+        .invoice-paper { color: #000; font-family: 'Courier New', Courier, monospace; border-left: 15px solid #000; }
     </style>
 </head>
 <body class="p-4 max-w-2xl mx-auto pb-24">
 
-    <header class="flex justify-between items-center mb-6 glass p-4 border-b-2 border-blue-500 sticky top-2 z-40">
+    <header class="flex justify-between items-center mb-8 glass p-5 border-b-4 border-yellow-500 sticky top-2 z-40 shadow-2xl bolt-bg">
         <div>
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <span class="bolt text-2xl">⚡</span> رسبون عراق 🏓
+            <h1 class="text-2xl font-black text-white flex items-center gap-2">
+                رسبون عراق <span class="text-yellow-400">🏓</span>
             </h1>
-            <p class="text-[10px] text-blue-400">نظام الإدارة المتكامل v3.0</p>
+            <p class="text-[10px] text-yellow-500 font-bold tracking-widest uppercase">Power Management ⚡</p>
         </div>
-        <div class="text-left">
-            <p id="totalProfit" class="text-xl font-bold text-green-400 tabular-nums">0 د.ع</p>
+        <div class="text-left flex flex-col items-end">
+            <p id="totalProfit" class="text-2xl font-black text-green-400 tabular-nums leading-none">0 د.ع</p>
+            <button onclick="resetProfit()" class="text-[9px] text-red-500 mt-2 border border-red-900/50 px-2 py-1 rounded-lg hover:bg-red-900/20 transition-all">تصفير الحساب ↺</button>
         </div>
     </header>
 
-    <nav class="flex gap-2 mb-6">
-        <button onclick="switchTab('tables')" id="btn-tables" class="flex-1 py-3 glass bg-blue-600 font-bold transition-all">المناضد</button>
-        <button onclick="switchTab('ps')" id="btn-ps" class="flex-1 py-3 glass text-slate-400 font-bold transition-all">بلايستيشن (8)</button>
+    <nav class="flex gap-3 mb-8">
+        <button onclick="switchTab('tables')" id="btn-tables" class="flex-1 py-4 glass bg-yellow-500 text-black font-black text-lg transition-all shadow-lg shadow-yellow-500/10">المناضد ⚡</button>
+        <button onclick="switchTab('ps')" id="btn-ps" class="flex-1 py-4 glass text-slate-400 font-black text-lg transition-all">بلايستيشن ⚡</button>
     </nav>
 
-    <div id="section-tables" class="grid grid-cols-1 gap-3"></div>
-    <div id="section-ps" class="hidden grid grid-cols-1 gap-3"></div>
+    <div id="section-tables" class="grid grid-cols-1 gap-4"></div>
+    <div id="section-ps" class="hidden grid grid-cols-1 gap-4"></div>
 
-    <div id="modal-add" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="glass p-6 w-full max-w-sm border-t-4 border-blue-500 shadow-2xl">
-            <h2 id="deviceLabel" class="text-xl font-bold mb-6 text-center">فتح حجز جديد</h2>
-            <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="pickPrice(15, 1000)" class="p-3 bg-slate-800 rounded-xl text-xs border border-transparent active:bg-blue-600 focus:border-blue-500">15 د | 1,000</button>
-                <button onclick="pickPrice(30, 2000)" class="p-3 bg-slate-800 rounded-xl text-xs border border-transparent active:bg-blue-600 focus:border-blue-500">30 د | 2,000</button>
-                <button onclick="pickPrice(60, 4000)" class="p-3 bg-slate-800 rounded-xl text-xs border-2 border-blue-500">ساعة | 4,000</button>
-                <button onclick="pickPrice(0, 500)" class="p-3 bg-slate-800 rounded-xl text-xs border border-transparent active:bg-blue-600">لعبة واحدة</button>
-            </div>
-            <button onclick="startSession()" class="w-full py-4 bg-blue-600 rounded-xl font-bold text-lg shadow-lg active:scale-95 transition-transform">بدء الجلسة ⚡</button>
-            <button onclick="closeModal('modal-add')" class="w-full mt-4 text-slate-500 text-sm">إلغاء</button>
-        </div>
-    </div>
-
-    <div id="modal-manage" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="glass p-6 w-full max-w-sm border-t-4 border-green-500 shadow-2xl">
-            <h2 id="manageName" class="text-center font-bold text-xl mb-4"></h2>
+    <div id="modal-add" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="glass p-8 w-full max-w-sm border-t-8 border-yellow-500 shadow-2xl bolt-bg">
+            <h2 id="deviceLabel" class="text-2xl font-black mb-6 text-center text-yellow-400">⚡ فتح جلسة جديدة</h2>
             
-            <p class="text-[10px] text-slate-400 mb-2">تمديد الوقت:</p>
-            <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="addTime(30, 2000)" class="py-3 bg-blue-900/30 border border-blue-500/50 rounded-xl text-xs active:bg-blue-500 font-bold">+30 دقيقة</button>
-                <button onclick="addTime(60, 4000)" class="py-3 bg-blue-900/30 border border-blue-500/50 rounded-xl text-xs active:bg-blue-500 font-bold">+1 ساعة</button>
+            <input type="text" id="customerNameInput" placeholder="اسم الزبون الفخم" class="w-full bg-slate-900 border-2 border-slate-800 p-4 rounded-2xl mb-6 text-center font-bold focus:border-yellow-500 outline-none shadow-inner">
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="pickPrice(15, 1000)" class="p-4 bg-slate-800 rounded-2xl text-xs font-bold border-2 border-transparent active:bg-yellow-500 active:text-black">15 د | 1,000</button>
+                <button onclick="pickPrice(30, 2000)" class="p-4 bg-slate-800 rounded-2xl text-xs font-bold border-2 border-transparent active:bg-yellow-500 active:text-black">30 د | 2,000</button>
+                <button onclick="pickPrice(60, 4000)" class="p-4 bg-slate-800 rounded-2xl text-xs font-bold border-2 border-yellow-500">ساعة | 4,000</button>
+                <button onclick="pickPrice(0, 500)" class="p-4 bg-slate-800 rounded-2xl text-xs font-bold">لعبة واحدة</button>
             </div>
-
-            <p class="text-[10px] text-slate-400 mb-2 text-right">طلبات الكافيتيريا:</p>
-            <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="addItem('بيبسي', 500)" class="p-3 bg-slate-800 rounded-xl text-[10px] flex justify-between"><span>🥤 بيبسي</span> <span>500</span></button>
-                <button onclick="addItem('ماء', 250)" class="p-3 bg-slate-800 rounded-xl text-[10px] flex justify-between"><span>💧 ماء</span> <span>250</span></button>
-                <button onclick="addItem('أركيلة', 3000)" class="p-3 bg-slate-800 rounded-xl text-[10px] flex justify-between"><span>💨 أركيلة</span> <span>3000</span></button>
-                <button onclick="addItem('كابتشينو', 1000)" class="p-3 bg-slate-800 rounded-xl text-[10px] flex justify-between"><span>☕ كابتشينو</span> <span>1000</span></button>
-            </div>
-
-            <button onclick="showInvoice()" class="w-full py-4 bg-red-600 rounded-xl font-bold shadow-lg active:scale-95 transition-transform">إنهاء الجلسة والقبض 🧾</button>
-            <button onclick="closeModal('modal-manage')" class="w-full mt-4 text-slate-500 text-sm">رجوع</button>
+            <button onclick="startSession()" class="w-full py-5 bg-yellow-500 text-black rounded-2xl font-black text-xl shadow-xl active:scale-95 transition-all">تأكيد الحجز ⚡</button>
+            <button onclick="closeModal('modal-add')" class="w-full mt-6 text-slate-500 font-bold uppercase text-xs tracking-widest">إغلاق</button>
         </div>
     </div>
 
-    <div id="modal-invoice" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-center justify-center p-6">
-        <div class="bg-white p-6 w-full max-w-xs rounded-lg shadow-2xl invoice-paper relative overflow-hidden">
-            <div class="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
-                <h3 class="font-bold text-xl uppercase tracking-widest">رسبون عراق 🏓</h3>
-                <p class="text-[9px] mt-1">فاتورة مبيعات إلكترونية</p>
-                <p id="invoice-date" class="text-[8px]"></p>
+    <div id="modal-manage" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="glass p-8 w-full max-w-sm border-t-8 border-green-500 shadow-2xl">
+            <div class="text-center mb-6">
+                <h2 id="manageName" class="text-2xl font-black"></h2>
+                <p id="manageCustomer" class="text-yellow-500 font-bold text-sm italic"></p>
             </div>
-            <div id="invoice-body" class="space-y-2 text-xs font-bold"></div>
-            <div class="border-t-2 border-dashed border-gray-400 mt-4 pt-4 flex justify-between items-center">
-                <span class="text-sm">المجموع الكلي:</span>
-                <span id="invoice-total" class="text-xl font-black"></span>
+            
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <button onclick="addTime(30, 2000)" class="py-4 bg-blue-900/20 border-2 border-blue-500 rounded-2xl font-bold text-blue-400">+30 دقيقة</button>
+                <button onclick="addTime(60, 4000)" class="py-4 bg-blue-900/20 border-2 border-blue-500 rounded-2xl font-bold text-blue-400">+1 ساعة</button>
             </div>
-            <button onclick="confirmFinish()" class="w-full mt-6 py-4 bg-black text-white rounded-xl font-bold uppercase active:bg-gray-800">تأكيد استلام المبلغ ✓</button>
+
+            <p class="text-[10px] text-slate-500 mb-3 font-bold uppercase tracking-widest text-right">قائمة الطلبات 🥤</p>
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <button onclick="addItem('بيبسي', 500)" class="p-3 bg-slate-900 rounded-xl text-xs flex justify-between items-center font-bold"><span>🥤 بيبسي</span> <span>500</span></button>
+                <button onclick="addItem('ماء', 250)" class="p-3 bg-slate-900 rounded-xl text-xs flex justify-between items-center font-bold"><span>💧 ماء</span> <span>250</span></button>
+                <button onclick="addItem('أركيلة', 3000)" class="p-3 bg-slate-900 rounded-xl text-xs flex justify-between items-center font-bold"><span>💨 أركيلة</span> <span>3000</span></button>
+                <button onclick="addItem('كابتشينو', 1000)" class="p-3 bg-slate-900 rounded-xl text-xs flex justify-between items-center font-bold"><span>☕ كبجينو</span> <span>1000</span></button>
+            </div>
+
+            <button onclick="showInvoice()" class="w-full py-5 bg-red-600 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition-all">إنهاء الفاتورة 🧾</button>
+            <button onclick="closeModal('modal-manage')" class="w-full mt-6 text-slate-500 font-bold text-xs text-center">رجوع</button>
+        </div>
+    </div>
+
+    <div id="modal-invoice" class="fixed inset-0 bg-black/98 z-[60] hidden flex items-center justify-center p-6">
+        <div class="bg-white p-8 w-full max-w-xs rounded-br-[60px] shadow-2xl invoice-paper">
+            <div class="text-center border-b-4 border-black pb-4 mb-4">
+                <h3 class="font-black text-2xl">رسبون 🏓 ⚡</h3>
+                <p id="invoice-customer-name" class="font-bold mt-2 text-lg"></p>
+                <p id="invoice-date" class="text-[9px] mt-1 text-gray-600"></p>
+            </div>
+            <div id="invoice-body" class="space-y-3 font-bold text-sm"></div>
+            <div class="border-t-4 border-black mt-6 pt-4 flex justify-between items-center font-black">
+                <span class="text-lg">المجموع:</span>
+                <span id="invoice-total" class="text-2xl"></span>
+            </div>
+            <button onclick="confirmFinish()" class="w-full mt-8 py-4 bg-black text-white rounded-xl font-black text-lg active:invert transition-all">تم استلام المبلغ ✓</button>
         </div>
     </div>
 
